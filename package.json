@@ -1,0 +1,24 @@
+{
+  "name": "aoc-2021",
+  "version": "1.0.0",
+  "description": "Advent of Code 2021",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "servor --static --reload"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrozbarry/aoc-2021.git"
+  },
+  "author": "Alex Barry",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mrozbarry/aoc-2021/issues"
+  },
+  "homepage": "https://github.com/mrozbarry/aoc-2021#readme",
+  "devDependencies": {
+    "hyperapp": "^2.0.19",
+    "servor": "^4.0.2"
+  },
+  "private": true
+}

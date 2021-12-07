@@ -1,4 +1,5 @@
-import { app, h, text } from 'hyperapp';
+import { h, text } from '../lib/hyperapp.js';
+import * as commonEffects from '../lib/commonEffects.js';
 
 const defaultPosition = {
   horizontal: 0,
@@ -7,7 +8,6 @@ const defaultPosition = {
 };
 
 export const initialState = {
-  input: '',
   total: 0,
   values: [],
   position: defaultPosition,
@@ -42,17 +42,8 @@ export const addOffset = (offset, previous) => {
 };
 
 export const actions = {
-  setInput: (state, event) => {
-    return {
-      ...state,
-      input: event.target.value,
-    };
-  },
-
-  submit: (state, event) => {
-    event.preventDefault();
-
-    const values = state.input
+  begin: (state, { input, map}) => {
+    const values = input
       .split('\n')
       .filter(v => v)
       .map(v => {
@@ -70,11 +61,11 @@ export const actions = {
         values,
         total: values.length,
       },
-      [effects.act, { action: actions.next }],
+      commonEffects.act(map(actions.next), {map}),
     ];
   },
 
-  next: (state) => {
+  next: (state, { map}) => {
     if (state.values.length === 0) {
       return state;
     }
@@ -87,47 +78,17 @@ export const actions = {
         values,
         position: addOffset(offset, state.position),
       },
-      [effects.act, { action: actions.next }],
+      commonEffects.act(map(actions.next), { map}),
     ];
   },
 };
 
-app({
-  init: initialState,
+export const view = (state) => h('div', {}, [
+  h('div', {}, [
+    text(`Results: [position:[horizontal:${state.position.horizontal}][depth:${state.position.depth}][aim:${state.position.aim}]][output:${state.position.horizontal * state.position.depth}]`),
+  ]),
 
-  view: (state) => h(
-    'div',
-    {
-      style: {
-        width: '50%',
-        maxWidth: '350px',
-        margin: '0 auto',
-        display: 'flex',
-        flexDirection: 'column',
-      },
-    },
-    [
-      h('form', {
-        onsubmit: actions.submit,
-        style: {
-          display: 'flex',
-          flexDirection: 'column',
-        },
-      }, [
-        h('textarea', { value: state.input, oninput: actions.setInput, style: { maxWidth: '100%' } }),
-        h('button', { type: 'submit' }, text('Process')),
-      ]),
+  h('progress', { max: state.total, value: state.total - state.values.length, style: { width: '100%', display: 'block' } }),
 
-      h('div', {}, [
-        text(`Results: [position:[horizontal:${state.position.horizontal}][depth:${state.position.depth}][aim:${state.position.aim}]][output:${state.position.horizontal * state.position.depth}]`),
-      ]),
-
-      h('progress', { max: state.total, value: state.total - state.values.length, style: { width: '100%', display: 'block' } }),
-
-      h('ul', {}, state.values.map(({ original }) => h('li', {}, text(original)))),
-
-    ],
-  ),
-
-  node: document.querySelector('#main'),
-});
+  h('ul', {}, state.values.map(({ original }) => h('li', {}, text(original)))),
+]);
