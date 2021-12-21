@@ -166,7 +166,7 @@ app({
               display: 'block',
               height: '32px',
             },
-          }, [1, 2, 3, 4].map((dayNumber) => h('option', {
+          }, [1, 2, 3, 4, 5].map((dayNumber) => h('option', {
             ...(state.dayNumber === dayNumber ? { selected: true } : {}),
             value: dayNumber,
             onclick: actions.setDayFromEvent,
@@ -210,9 +210,16 @@ app({
     ]
   ),
 
-  subscriptions: (_state) => [
-    subscriptions.watchHash({ setDay: actions.setDay }),
-  ],
+  subscriptions: (state) => {
+    return [
+      subscriptions.watchHash({ setDay: actions.setDay }),
+      ...(
+        (typeof state.module.subscriptions === 'function')
+          ? state.module.subscriptions(state, map)
+          : []
+      ),
+    ];
+  },
 
   node: document.querySelector('body'),
 });

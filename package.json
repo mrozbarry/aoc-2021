@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Advent of Code 2021",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "ava",
     "start": "servor --static --reload"
   },
   "repository": {
@@ -17,8 +17,13 @@
   },
   "homepage": "https://github.com/mrozbarry/aoc-2021#readme",
   "devDependencies": {
+    "ava": "^3.15.0",
+    "esm": "^3.2.25",
     "hyperapp": "^2.0.19",
     "servor": "^4.0.2"
   },
-  "private": true
+  "private": true,
+  "ava": {
+    "require": ["esm"]
+  }
 }
