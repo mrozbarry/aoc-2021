@@ -6,7 +6,7 @@ const array = (length) => Array.from({ length }, (_, index) => index);
 const nullBoard = () => ({ cells: array(5).map(() => array(5).map(() => null)), called: [], isDone: true });
 
 const first = (arr, defaultValue) => arr[0] || defaultValue;
-const last = (arr, defaultValue) => arr.slice(-1)[0] || defaultValue;
+const last = (arr, defaultValue) => arr[arr.length - 1] || defaultValue;
 const sum = (arr) => arr.reduce((memo, number) => memo + number, 0);
 
 const winConditions = [
@@ -37,6 +37,7 @@ export const initialState = {
   numbers: [],
   called: [],
   boards: [],
+  lastCalled: null,
   winnerBoardIndex: -1,
   winOrder: [],
 };
@@ -71,19 +72,24 @@ export const actions = {
   },
 
   playNumber: (state, {map}) => {
-    if (state.winOrder.length === state.boards.length) return state;
+    if (state.winOrder.length === state.boards.length) {
+      console.log('winOrder.length.end', state.winOrder.length, state.boards.length);
+      return state;
+    }
 
     const numbers = [...state.numbers];
     const lastCalled = numbers.shift();
 
-    if (!lastCalled) return state;
+    if (lastCalled == undefined) {
+      console.log('lastCalled.end', lastCalled);
+      return state;
+    }
 
     let winnerBoardIndex = -1;
     const boards = state.boards.map((b, index) => {
       if (b.isDone) return b;
 
-      const called = b.called.concat(lastCalled);
-      const isDone = isComplete(b.cells, called);
+      const called = b.called.concat(lastCalled); const isDone = isComplete(b.cells, called);
       if (isDone) {
         winnerBoardIndex = index;
       }
@@ -99,6 +105,7 @@ export const actions = {
         ...state,
         boards,
         numbers,
+        lastCalled,
         winOrder: winnerBoardIndex >= 0 ? [...state.winOrder, winnerBoardIndex ] : state.winOrder,
       },
       commonEffects.act(map(actions.playNumber), {map}),
@@ -107,6 +114,9 @@ export const actions = {
 };
 
 export const view = (state) => h('div', {}, [
+  h('div', {}, [
+    text(`Last called: ${state.lastCalled}`),
+  ]),
   h('div', {}, [
     text(`Part 1: [first winning board index:${first(state.winOrder)}][score:${calculateScore(state.boards[first(state.winOrder, -1)] || nullBoard())}]`),
   ]),
