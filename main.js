@@ -166,7 +166,7 @@ app({
               display: 'block',
               height: '32px',
             },
-          }, [1, 2, 3, 4, 5, 6].map((dayNumber) => h('option', {
+          }, [1, 2, 3, 4, 5, 6, 7].map((dayNumber) => h('option', {
             ...(state.dayNumber === dayNumber ? { selected: true } : {}),
             value: dayNumber,
             onclick: actions.setDayFromEvent,
